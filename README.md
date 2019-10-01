@@ -1,2 +1,4 @@
 # AngularRxjs
-From PluralSight Author - DeborahK
+PluralSight
+Author - DeborahK
+Student - Anurag
