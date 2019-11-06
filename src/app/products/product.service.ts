@@ -1,10 +1,11 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { throwError, combineLatest, BehaviorSubject, Subject, merge } from 'rxjs';
+import { throwError, combineLatest, BehaviorSubject, Subject, merge, of, EMPTY } from 'rxjs';
 import { catchError, tap, map, scan, shareReplay } from 'rxjs/operators';
 import { Product } from './product';
 import { SupplierService } from '../suppliers/supplier.service';
 import { ProductCategoryService } from '../product-categories/product-category.service';
+import { Supplier } from '../suppliers/supplier';
 
 @Injectable({
   providedIn: 'root'
@@ -58,6 +59,20 @@ productsWithAdd$ = merge(
 )
 .pipe(
   scan((acc: Product[], value: Product) => [...acc, value])
+);
+
+selectedProductSuppliers$ = combineLatest([
+  this.selectedProduct$,
+  this.supplierService.suppliers$
+  .pipe(
+    catchError(err => of([] as Supplier[]))
+  )
+]).pipe(
+  map(([selectedProduct, suppliers]) =>
+  suppliers.filter(
+    supplier => selectedProduct ? selectedProduct.supplierIds.includes(supplier.id) : EMPTY
+    )
+  )
 );
 
   constructor(private http: HttpClient,
