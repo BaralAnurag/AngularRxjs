@@ -1,7 +1,8 @@
 import { Component, ChangeDetectionStrategy  } from '@angular/core';
-import { Subscription, EMPTY, Subject } from 'rxjs';
+import { Subscription, EMPTY, Subject, combineLatest } from 'rxjs';
 import { ProductService } from '../product.service';
-import { catchError } from 'rxjs/operators';
+import { catchError, map } from 'rxjs/operators';
+import { Product } from '../product';
 
 @Component({
   selector: 'pm-product-list',
@@ -26,7 +27,16 @@ export class ProductListAltComponent {
 
 selectedProduct$ = this.productService.selectedProduct$;
 
+vm$ = combineLatest([
+  this.products$,
+  this.selectedProduct$
+]).pipe(
+  map(([products, product]: [Product[], Product]) =>
+  ({products, productId: product ? product.id : 0 }))
+);
+
   onSelected(productId: number): void {
+    console.log('Testv Point 1');
     this.productService.selectedProductChanged(productId);
   }
 }
